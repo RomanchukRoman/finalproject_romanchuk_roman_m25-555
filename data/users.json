@@ -19,5 +19,12 @@
     "hashed_password": "b476a7d9b21083e55fb5267509793f3e0a9f2a86a3cbdfe8b85add913e692f6d",
     "salt": "573c8ed462240092",
     "registration_date": "2025-11-15T21:24:04.828599"
+  },
+  {
+    "user_id": 4,
+    "username": "ivan",
+    "hashed_password": "ba88c336ca53bfa840ec8022963591b7a9e2a16e3ac0339ad9aab9980872fc4b",
+    "salt": "81775bd8aa603da7",
+    "registration_date": "2025-11-15T22:35:23.112837"
   }
 ]
