@@ -2,7 +2,6 @@ import hashlib
 import secrets
 from datetime import datetime
 from typing import Any, Dict, List, Optional
-from decimal import Decimal
 
 
 class User:

@@ -5,9 +5,10 @@ from pathlib import Path
 from typing import Optional, List, Dict, Any
 
 # Импорты из нашей системы
-from ..core.models import User, Wallet, Portfolio
-from ..core.exceptions import InsufficientFundsError, ApiRequestError
-from ..core.currencies import get_currency, get_all_currencies, CurrencyNotFoundError
+from ..core.models import User, Portfolio
+from ..core.exceptions import InsufficientFundsError
+from ..core.currencies import get_all_currencies, CurrencyNotFoundError
+from ..core.usecases import usecases
 
 
 class CLIState:
@@ -60,9 +61,12 @@ def load_rates(data_dir: Path) -> dict:
             with open(rates_file, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
-            raise ApiRequestError(f"Ошибка загрузки курсов: {e}")
+            # Просто возвращаем пустой словарь при ошибке
+            print(f"Предупреждение: Ошибка загрузки курсов: {e}")
+            return {}
     else:
-        raise ApiRequestError("Файл с курсами не найден")
+        print("Предупреждение: Файл с курсами не найден")
+        return {}
 
 
 def get_next_user_id(users: list) -> int:
@@ -224,11 +228,9 @@ def show_portfolio_command(args: Dict[str, Any], state: CLIState):
         
         portfolio = Portfolio.from_dict(portfolio_data)
         
-        # Загрузка курсов
-        try:
-            rates = load_rates(state.data_dir)
-        except ApiRequestError as e:
-            print(f"Внимание: {e}")
+        # Загрузка курсов - упрощенная версия
+        rates = load_rates(state.data_dir)
+        if not rates:
             print("Используются базовые курсы для расчета")
             rates = {
                 'EUR_USD': {'rate': 1.08},
@@ -286,9 +288,6 @@ def buy_command(args: Dict[str, Any], state: CLIState):
             print("Ошибка: необходимо указать --currency и --amount")
             return
         
-        # Валидация валюты через новую систему
-        currency_obj = get_currency(currency)
-        
         try:
             amount = float(amount_str)
         except ValueError:
@@ -299,6 +298,9 @@ def buy_command(args: Dict[str, Any], state: CLIState):
         if not state.current_user:
             print("Сначала выполните login")
             return
+        
+        # Валидация через usecases
+        result = usecases.buy_currency(state.current_user.user_id, currency, amount)
         
         # Валидация входа
         currency = currency.upper().strip()
@@ -351,7 +353,7 @@ def buy_command(args: Dict[str, Any], state: CLIState):
         else:
             print(f"Покупка выполнена: {amount:.4f} {currency}")
         
-        print(f"Изменения в портфеле:")
+        print("Изменения в портфеле:")
         print(f"- {currency}: было {old_balance:.4f} → стало {wallet.balance:.4f}")
         
     except CurrencyNotFoundError as e:
@@ -374,9 +376,6 @@ def sell_command(args: Dict[str, Any], state: CLIState):
             print("Ошибка: необходимо указать --currency и --amount")
             return
         
-        # Валидация валюты через новую систему
-        currency_obj = get_currency(currency)
-        
         try:
             amount = float(amount_str)
         except ValueError:
@@ -387,6 +386,9 @@ def sell_command(args: Dict[str, Any], state: CLIState):
         if not state.current_user:
             print("Сначала выполните login")
             return
+        
+        # Валидация через usecases
+        result = usecases.sell_currency(state.current_user.user_id, currency, amount)
         
         # Валидация входа
         currency = currency.upper().strip()
@@ -447,7 +449,7 @@ def sell_command(args: Dict[str, Any], state: CLIState):
         else:
             print(f"Продажа выполнена: {amount:.4f} {currency}")
         
-        print(f"Изменения в портфеле:")
+        print("Изменения в портфеле:")
         print(f"- {currency}: было {old_balance:.4f} → стало {wallet.balance:.4f}")
         
     except CurrencyNotFoundError as e:
@@ -470,9 +472,8 @@ def get_rate_command(args: Dict[str, Any], state: CLIState):
             print("Ошибка: необходимо указать --from и --to")
             return
         
-        # Валидация кодов валют через новую систему
-        from_currency_obj = get_currency(from_currency)
-        to_currency_obj = get_currency(to_currency)
+        # Валидация через usecases
+        rate, updated_at = usecases.get_exchange_rate(from_currency, to_currency)
         
         # Валидация кодов валют
         from_currency = from_currency.upper().strip()
