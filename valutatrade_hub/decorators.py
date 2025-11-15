@@ -1,11 +1,12 @@
 import functools
-import logging
 import inspect
-from datetime import datetime
-from typing import Any, Callable
+import logging
 
 # Создаем директорию для логов
 import os
+from datetime import datetime
+from typing import Any, Callable
+
 os.makedirs('logs', exist_ok=True)
 
 # Настройка логирования

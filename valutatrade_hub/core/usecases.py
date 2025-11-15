@@ -1,8 +1,9 @@
-from typing import Tuple
 from datetime import datetime
-from ..decorators import log_buy, log_sell, log_register, log_login, log_get_rate
-from .models import User
+from typing import Tuple
+
+from ..decorators import log_buy, log_get_rate, log_login, log_register, log_sell
 from .currencies import get_currency
+from .models import User
 
 
 class UseCases:

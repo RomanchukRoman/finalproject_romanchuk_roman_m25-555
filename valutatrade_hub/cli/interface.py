@@ -1,13 +1,14 @@
 import json
-import sys
 import shlex
+import sys
 from pathlib import Path
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
+
+from ..core.currencies import CurrencyNotFoundError, get_all_currencies
+from ..core.exceptions import InsufficientFundsError
 
 # Импорты из нашей системы
-from ..core.models import User, Portfolio
-from ..core.exceptions import InsufficientFundsError
-from ..core.currencies import get_all_currencies, CurrencyNotFoundError
+from ..core.models import Portfolio, User
 from ..core.usecases import usecases
 
 
