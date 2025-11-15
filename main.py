@@ -8,8 +8,8 @@ if __name__ == '__main__':
 
 # poetry run project 
 # help
-# register --username alice --password 1234
-# login --username alice --password 1234
+# register --username ivan --password 1234
+# login --username ivan --password 1234
 # show-portfolio
 # buy --currency BTC --amount 0.05
 # buy --currency USD --amount 1000

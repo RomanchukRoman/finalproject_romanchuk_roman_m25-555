@@ -9,7 +9,7 @@
 ## Установка и запуск
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/RomanchukRoman/finalproject_romanchuk_roman_m25-555.git
 cd finalproject_romanchuk_roman_m25-555
 poetry install
 poetry run project
